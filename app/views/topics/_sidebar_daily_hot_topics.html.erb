@@ -1,3 +1,6 @@
 <div class="totals box">
   <h2 class="title"><%= t("common.daily_hot_topics")%></h2>
+  <% @daliy_hot_topics.each do |topic| %>
+    <%= topic.title %>
+  <% end %>
 </div>

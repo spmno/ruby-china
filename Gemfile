@@ -95,6 +95,7 @@ gem 'god'
 gem 'dalli', '2.7.1'
 gem 'eventmachine'
 gem 'puma'
+gem 'whenever', :require => false
 # Faye Server 需要
 gem 'thin'
 # for api 跨域

@@ -25,6 +25,8 @@ class Reply
   index user_id: 1
   index topic_id: 1
 
+  scope :hour_reply, ->(topic, hour){ where(topic_id: topic, updated_at: Time.now-hour-1.hour..Time.now-hour) }
+
   delegate :title, to: :topic, prefix: true, allow_nil: true
   delegate :login, to: :user, prefix: true, allow_nil: true
 

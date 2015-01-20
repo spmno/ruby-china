@@ -45,6 +45,7 @@ class Topic
   belongs_to :last_reply_user, class_name: 'User'
   belongs_to :last_reply, class_name: 'Reply'
   has_many :replies, dependent: :destroy
+  has_many :hit_counters, dependent: :destroy
 
   validates_presence_of :user_id, :title, :body, :node
 
