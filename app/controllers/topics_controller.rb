@@ -13,27 +13,14 @@ class TopicsController < ApplicationController
     @topics = @topics.paginate(page: params[:page], per_page: 15, total_entries: 1500)
     set_seo_meta t("menu.topics"), "#{Setting.app_name}#{t("menu.topics")}"
 
-    @daliy_hot_topics = topic_ids.map {|k, v| Topic.find(k)}
+    daily_topic_ids = HotTopicDaily.new.hot_topic_ids || []
+    @daliy_hot_topics = daily_topic_ids.map {|k, v| Topic.find(k)}
+    weekly_topic_ids = HotTopicWeekly.new.hot_topic_ids || []
+    @weekly_hot_topics = weekly_topic_ids.map {|k, v| Topic.find(k)}
 
   end
 
-  def topic_ids
-    hit_counters = HitCounter.day_before_counters(0)
-    return if hit_counters == nil
-    hot_option_topic_ids = hit_counters.map(&:topic_id)
-    hot_option_topic_ids.uniq!
-    hot_topic_values = {}
-    hot_option_topic_ids.each do |topic_id|
-      value = 0
-      24.times do |i|
-        hour_topic = HitCounter.hour_topic(topic_id, i).first
-        hour_topic_hits = hour_topic == nil ? 0 : hour_topic.hits.value
-        value += (hour_topic_hits + Reply.hour_reply(topic_id, i).size * 3) * (24 - i)
-      end
-      hot_topic_values[topic_id.to_s] = value
-    end
-    sort_topic_values = hot_topic_values.sort {|a, b| b[1]<=>a[1]}
-  end
+
 
   def feed
     @topics = Topic.recent.without_body.limit(20).includes(:node, :user, :last_reply_user)
@@ -84,7 +71,7 @@ class TopicsController < ApplicationController
     @topic = Topic.without_body.find(params[:id])
     @topic.hits.incr(1)
     @hit_counter = HitCounter.current_hour_topic(@topic).first
-    if @hit_counter != nil
+    if @hit_counter
       @hit_counter.hits.increment
     else
       @hit_counter = HitCounter.new

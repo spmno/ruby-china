@@ -25,7 +25,10 @@ class Reply
   index user_id: 1
   index topic_id: 1
 
-  scope :hour_reply, ->(topic, hour){ where(topic_id: topic, updated_at: Time.now-hour-1.hour..Time.now-hour) }
+  scope :hour_reply, ->(topic, hour){ where(topic_id: topic, updated_at: Time.now-hour.hours-1.hour..Time.now-hour.hours) }
+  scope :day_reply, ->(topic, day){ where(topic_id: topic, updated_at: Time.now-day.days-1.day..Time.now-day.days) }
+  scope :day_before_counters, ->(day){ where(updated_at: Time.now-day.days-1.day..Time.now-day.days) }
+  scope :week_before_counters, ->(week){ where(updated_at: Time.now-week.weeks-1.week..Time.now-week.weeks) }
 
   delegate :title, to: :topic, prefix: true, allow_nil: true
   delegate :login, to: :user, prefix: true, allow_nil: true
